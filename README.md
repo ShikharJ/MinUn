@@ -1,12 +1,16 @@
 # MinUn
 Instructional repository for reproducing the experiments from our paper [MinUn: Accurate ML Inference on Microcontrollers](https://dl.acm.org/doi/10.1145/3589610.3596278).
 
+![alt text](minun-overview.png "MinUn Overview")
+
 Parts of this repository are still in active development. If you wish for more information, or  wish to point out an error, please consider raising a GitHub issue.
 
 ## Instructions
 This repository is segregated into different directories based on the different experiment tables presented in the [ArXiv version](https://arxiv.org/abs/2210.16556) of the paper.
 
-**We shall only provide setup instructions and workarounds to common system-related issues in this particular README. For experiment-specific instructions and results, please refer to the READMEs in the individual directories after having followed the instructions presented here.**
+**We shall only provide setup instructions, model training and conversion instructions, and workarounds to common system-related issues in this particular README.**
+
+**For experiment-specific instructions and results, please refer to the READMEs in the individual directories after having followed the instructions presented here.**
 
 ### Setup
 MinUn is currently only available for ``Linux``. All of our experiments have been tested with ``Python 3.7.16`` running on ``Ubuntu 22.04``. We recommend users to make use of these specific versions for preventing deprecation issues.
@@ -14,7 +18,6 @@ MinUn is currently only available for ``Linux``. All of our experiments have bee
 Additionally, we recommend that a user create a virtual environment using ``conda`` before following the rest of the instructions (one can, alternatively, also use ``venv``).
 
 #### Recommended Conda Setup
-
 1) Download [Anaconda](https://www.anaconda.com/download).
 
 2) Go to the download directory and install ``conda``:
@@ -35,7 +38,6 @@ conda install pip3
 ```
 
 #### Prerequisite Repository Setup
-
 1) Create the following three directories:
 ```
 mkdir Train
@@ -59,28 +61,95 @@ git clone https://github.com/krantikiran68/EdgeML.git
 ```
 
 #### Recommended Package Installation for Training
-If you wish to train (from scratch) any of the ``TinyML`` models developed by ``Microsoft Research India``, follow the instructions provided in the [EdgeML README](https://github.com/microsoft/EdgeML/blob/master/README.md#organization). Else, if you already have a trained ``TF`` / ``PyTorch`` / ``ONNX`` model, you can safely skip this section and move to the conversion setup section.
+If you wish to train (from scratch) any of the ``TinyML`` models developed by Microsoft Research India, feel free to, alternatively, follow the elaborate instructions provided in the [EdgeML README](https://github.com/microsoft/EdgeML/blob/master#organization). Else, if you already have a trained ``TF`` / ``PyTorch`` / ``ONNX`` model, you can safely skip this section and move to the conversion setup section.
 
 Please ensure that your ``conda`` environment is active, as described previously.
 
 ##### Tensorflow-based Workflows
+1) Change directory to ``Train/EdgeML/tf``:
+```
+cd ../Train/EdgeML/tf/
+```
 
-https://github.com/onnx/tensorflow-onnx
+2) Run the following installation commands (alternatively, you can also follow the more elaborate [README.md](https://github.com/microsoft/EdgeML/tree/master/tf#installation) instructions from ``Train/EdgeML/tf``):
+```
+# For CPU-based training.
+pip install -r requirements-cpu.txt
+pip install -e .
+```
+```
+# For GPU-based training.
+pip install -r requirements-gpu.txt
+pip install -e .
+```
+
 ##### PyTorch-based Workflows
+1) Change directory to ``Train/EdgeML/pytorch``:
+```
+cd ../Train/EdgeML/pytorch/
+```
 
-https://pytorch.org/tutorials/advanced/super_resolution_with_onnxruntime.html
-
-We shall provide a full training example for both ``TF`` and ``PyTorch`` in a future update to this README.
+2) Run the following installation commands (alternatively, you can also follow the more elaborate [README.md](https://github.com/microsoft/EdgeML/tree/master/pytorch#installation) instructions from ``Train/EdgeML/pytorch``):
+```
+# For CPU-based training.
+pip install -r requirements-cpu.txt
+pip install -e .
+```
+```
+# For GPU-based training.
+pip install -r requirements-gpu.txt
+pip install -e .
+pip install -e edgeml_pytorch/cuda/
+```
 
 #### Recommended Package Installation for Conversion
-Once you have a trained model available in ``ONNX``, you just need to use a converter which generates the ``SeeDot DSL`` and dumps the model tensors to be used by ``Shiftry`` / ``MinUn``.
+Once you have a trained model available in ``ONNX``, you need to use a converter which generates the ``SeeDot DSL`` and dumps the model tensors to be used by ``Shiftry`` / ``MinUn``.
 
 You don't need to install anything specific for running the ``ONNX`` converters. Please move onto the next section.
 
 #### Recommended Package Installation for Compilation
 Once the model has been specified in ``SeeDot DSL`` and the weights have been dumped, ``Shiftry`` / ``MinUn`` compilers will accomplish the remaining heavy-lifting to generate the final ``C`` / ``C++`` inference codes for your target devices.
 
+Please ensure that your ``conda`` environment is active, as described previously.
+
 The setup instructions for the compilers are as follows:
+1) Change directory to ``Train/EdgeML/tools/SeeDot/``:
+```
+cd ../tools/SeeDot/
+```
+
+2) Run the following installation commands (alternatively, you can also follow the more elaborate [README.md](https://github.com/microsoft/EdgeML/tree/master/tools/SeeDot#software-requirements) instructions from ``Train/EdgeML/tools/SeeDot``):
+```
+sudo apt install gcc g++ build-essential cmake protobuf-compiler libprotobuf-dev
+```
+```
+pip3 install -r requirements.txt
+```
+**Note**: ``Bokeh-2.1.1`` sometimes raises import errors with ``Jinja2``. If you face such an issue, simply uninstall your current version of ``Bokeh``, change the ``tools/SeeDot/requirements.txt`` from ``bokeh==2.1.1`` to ``bokeh==2.4.1``, and re-run the previous command.
+
+Your full setup is now complete!
+
+### Model Training using EdgeML
+**TODO**: Provide a self-contained training example in this README.
+
+
+https://github.com/onnx/tensorflow-onnx
+
+https://pytorch.org/tutorials/advanced/super_resolution_with_onnxruntime.html
+
+### Model Conversion using ONNX-to-SeeDot Converter
+**TODO**: Provide a full conversion example in this README.
+
+Once a trained ``ONNX`` model has been obtained, please follow the instructions from the [ONNX Converter README](https://github.com/shubhamugare/EdgeML/tree/master/Tools/SeeDot/seedot/compiler/ONNX#introduction) by changing directory to:
+```
+cd ../../../../Convert/EdgeML/Tools/SeeDot/seedot/compiler
+/ONNX/
+```
+
+### Model Compilation using Shiftry / MinUn
+**TODO**: Provide a full compilation example in this README.
+
+Please proceed to the directory pertaining to the table name, whose results you wish to replicate, and follow the ``README`` files provided there.
 
 ### Known Quirks and Their Workarounds
 During the compiler execution, a number of system issues can arise, leading to compilation failure. We hope to address these common issues in this section. Our list is not comprehensive by any stretch of imagination and, as such, we would appreciate the user for reporting additional failures experienced by them.
